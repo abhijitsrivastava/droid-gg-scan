@@ -32,6 +32,11 @@
             android:name="com.eduglasses.glassscan.capture.CameraActivity"
             android:label="@string/app_name" >
         </activity>
+        
+        <activity
+            android:name="com.eduglasses.glassscan.capture.ShareActivity"
+            android:label="@string/app_name" >
+        </activity>
     </application>
 
 </manifest>

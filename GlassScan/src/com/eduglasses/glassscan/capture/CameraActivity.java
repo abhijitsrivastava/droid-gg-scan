@@ -16,7 +16,6 @@ import android.view.SurfaceView;
 import android.view.WindowManager;
 
 import com.eduglasses.glassscan.BaseGlassActivity;
-import com.eduglasses.glassscan.LaunchActivity;
 import com.eduglasses.glassscan.R;
 import com.eduglasses.glassscan.image.ImageManager;
 
@@ -108,27 +107,30 @@ public class CameraActivity extends BaseGlassActivity implements
 		@Override
 		public void onPictureTaken(byte[] captureData, Camera camera) {
 
+			Intent intent = new Intent(getApplicationContext(), ShareActivity.class);
+			intent.putExtra("image", captureData);
+        	startActivity(intent);
+        	
+			/*
 			Bitmap captureImage = null;
 			if (captureData != null) {
 				captureImage = getBitmapFromByteArray(captureData);
 			}
 
+			
 			Uri imageUri = null;
-			String imageName = IMAGE_PREFIX + System.currentTimeMillis()
-					+ ".png";
+			
+			String imageName = IMAGE_PREFIX + System.currentTimeMillis() + ".png";
 			try {
 				imageUri = mImageManager.saveImage(imageName, captureImage);
 				Log.v(TAG, "Saving image as: " + imageName);
-				finish();
 				
-				//Intent intent = new Intent(getApplicationContext(), GlassScanActivity.class);
-	        //	Intent i = new Intent();
-	        	//i.putExtra("DeviceId", imageUri);
-	        	//startActivity(i);
+				
 	        	
 			} catch (IOException e) {
 				Log.e(TAG, "Failed to save image!", e);
 			}
+			*/
 		}
 	};
 
