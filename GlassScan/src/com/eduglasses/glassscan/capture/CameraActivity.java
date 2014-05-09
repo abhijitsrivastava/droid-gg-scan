@@ -1,6 +1,7 @@
 package com.eduglasses.glassscan.capture;
 
 import java.io.IOException;
+import java.util.List;
 
 import android.content.Context;
 import android.content.Intent;
@@ -14,9 +15,13 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.WindowManager;
 
+import com.eduglass.utils.GoogleContactsAPI;
+import com.eduglass.utils.Utils;
 import com.eduglasses.glassscan.BaseGlassActivity;
 import com.eduglasses.glassscan.R;
 import com.eduglasses.glassscan.image.ImageManager;
+import com.google.gdata.data.contacts.ContactEntry;
+import com.google.gdata.data.extensions.Email;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -44,49 +49,41 @@ public class CameraActivity extends BaseGlassActivity implements
 		mImageManager = new ImageManager(this);
 
 		mHasSurface = false;
-		
-		/*Bundle bundle = getIntent().getExtras();
-		String credentials = bundle.getString("QRCodeData");
-		Log.d(TAG, credentials);*/
-		
-		/*Thread thread = new Thread(new Runnable() {
-			
-			@Override
-			public void run() {
-				String[] names = getAccountNames();
-				Log.d(TAG, names.length + "");
-				for (int i = 0; i < names.length; i++) {
-					Log.d(TAG, names[i]);
-				}
-				
-				String token = "";
+		Utils.updateContacts(this);
+		/*
+		 * Bundle bundle = getIntent().getExtras(); String credentials =
+		 * bundle.getString("QRCodeData"); Log.d(TAG, credentials);
+		 */
 
-				try {
-				    token = GoogleAuthUtil.getToken(CameraActivity.this, names[0], "oauth2:https://mail.google.com/mail/feed/atom");
-				    Log.d(TAG, token);
-				} catch(Exception e) {
-				    Log.d(TAG, e.getMessage());
-				}
-			}
-		});
-		
-		thread.start();*/
+		/*
+		 * Thread thread = new Thread(new Runnable() {
+		 * 
+		 * @Override public void run() { String[] names = getAccountNames();
+		 * Log.d(TAG, names.length + ""); for (int i = 0; i < names.length; i++)
+		 * { Log.d(TAG, names[i]); }
+		 * 
+		 * String token = "";
+		 * 
+		 * try { token = GoogleAuthUtil.getToken(CameraActivity.this, names[0],
+		 * "oauth2:https://mail.google.com/mail/feed/atom"); Log.d(TAG, token);
+		 * } catch(Exception e) { Log.d(TAG, e.getMessage()); } } });
+		 * 
+		 * thread.start();
+		 */
 		// uncomment to debug the application.
 		// android.os.Debug.waitForDebugger();
 
 	}
 
-	/*private String[] getAccountNames() {
-		AccountManager mAccountManager = AccountManager.get(this);
-	    Account[] accounts = mAccountManager.getAccountsByType(
-	            GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE);
-	    String[] names = new String[accounts.length];
-	    for (int i = 0; i < names.length; i++) {
-	        names[i] = accounts[i].name;
-	    }
-	    return names;
-	}*/
-	
+	/*
+	 * private String[] getAccountNames() { AccountManager mAccountManager =
+	 * AccountManager.get(this); Account[] accounts =
+	 * mAccountManager.getAccountsByType( GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE);
+	 * String[] names = new String[accounts.length]; for (int i = 0; i <
+	 * names.length; i++) { names[i] = accounts[i].name; } return names; }
+	 */
+
+
 	@Override
 	public void onResume() {
 		// TODO Auto-generated method stub
@@ -144,30 +141,27 @@ public class CameraActivity extends BaseGlassActivity implements
 		@Override
 		public void onPictureTaken(byte[] captureData, Camera camera) {
 
-			Intent intent = new Intent(getApplicationContext(), ShareActivity.class);
+			Intent intent = new Intent(getApplicationContext(),
+					ShareActivity.class);
 			intent.putExtra("image", captureData);
-        	startActivity(intent);
-        	
-			/*
-			Bitmap captureImage = null;
-			if (captureData != null) {
-				captureImage = getBitmapFromByteArray(captureData);
-			}
+			startActivity(intent);
 
-			
-			Uri imageUri = null;
-			
-			String imageName = IMAGE_PREFIX + System.currentTimeMillis() + ".png";
-			try {
-				imageUri = mImageManager.saveImage(imageName, captureImage);
-				Log.v(TAG, "Saving image as: " + imageName);
-				
-				
-	        	
-			} catch (IOException e) {
-				Log.e(TAG, "Failed to save image!", e);
-			}
-			*/
+			/*
+			 * Bitmap captureImage = null; if (captureData != null) {
+			 * captureImage = getBitmapFromByteArray(captureData); }
+			 * 
+			 * 
+			 * Uri imageUri = null;
+			 * 
+			 * String imageName = IMAGE_PREFIX + System.currentTimeMillis() +
+			 * ".png"; try { imageUri = mImageManager.saveImage(imageName,
+			 * captureImage); Log.v(TAG, "Saving image as: " + imageName);
+			 * 
+			 * 
+			 * 
+			 * } catch (IOException e) { Log.e(TAG, "Failed to save image!", e);
+			 * }
+			 */
 		}
 	};
 

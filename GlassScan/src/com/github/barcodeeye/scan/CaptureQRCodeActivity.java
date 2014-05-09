@@ -14,6 +14,7 @@
 package com.github.barcodeeye.scan;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import android.app.AlertDialog;
@@ -31,6 +32,7 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import com.eduglass.utils.GoogleContactsAPI;
 import com.eduglass.utils.Utils;
 import com.eduglasses.glassscan.R;
 import com.eduglasses.glassscan.capture.CameraActivity;
@@ -40,6 +42,8 @@ import com.github.barcodeeye.migrated.BeepManager;
 import com.github.barcodeeye.migrated.FinishListener;
 import com.github.barcodeeye.migrated.InactivityTimer;
 import com.github.barcodeeye.scan.ui.ViewfinderView;
+import com.google.gdata.data.contacts.ContactEntry;
+import com.google.gdata.data.extensions.Email;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.DecodeHintType;
 import com.google.zxing.Result;
@@ -313,11 +317,8 @@ public final class CaptureQRCodeActivity extends BaseGlassActivity implements
         }*/
                 
         if (scanedMessage != null) {
-        	Log.d("inside if", "qr code matched");
-        	
-        	String[] array = scanedMessage.split(",");
-        	String emailText = "";
-        	String seperator = "";
+        	Log.d("inside if", "qr code matched");        	
+        	String[] array = scanedMessage.split(",");        	
         	for (int i = 0; i < array.length; i++) {
 				switch(i) {
 					case 0:
@@ -326,16 +327,14 @@ public final class CaptureQRCodeActivity extends BaseGlassActivity implements
 					case 1:
 						Utils.saveStringPreferences(CaptureQRCodeActivity.this, Utils.KEY_PASSWORD, array[i]);
 						break;
-					default:
+					/*default:
 						emailText += seperator + array[i];
 						seperator = ",";
-						break;
+						break;*/
 				}
 			}
         	
-        	if(!"".equals(emailText)) {
-        		Utils.saveStringPreferences(CaptureQRCodeActivity.this, Utils.KEY_EMAIL_TEXT, emailText);
-        	}
+        	Utils.updateContacts(this);
         	
         	finish();
         	Intent i = new Intent(this, CameraActivity.class);
