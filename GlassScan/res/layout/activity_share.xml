@@ -9,10 +9,13 @@
         android:contentDescription="@string/glass_scan"
         android:scaleType="fitXY" />
     
-    <TextView android:layout_width="match_parent"
+    <TextView android:id="@+id/textview" 
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:text="Tap to share"
-        android:layout_alignParentBottom="true"/>
+        android:layout_centerHorizontal="true"
+        android:text="@string/label_share"
+        android:singleLine="false"
+        android:layout_alignParentBottom="true"
+        android:textStyle="bold" />
 
 </RelativeLayout>
