@@ -38,8 +38,8 @@ public class LaunchActivity extends Activity {
 		if("".equals(Utils.getStringPreferences(LaunchActivity.this, Utils.KEY_USERNAME)) || "".equals(Utils.getStringPreferences(LaunchActivity.this, Utils.KEY_USERNAME))) {
 			startActivity(CaptureQRCodeActivity.newIntent(this));
 		} else {
-			//startActivity(CameraActivity.newIntent(this));
-			startActivity(CaptureQRCodeActivity.newIntent(this));
+			startActivity(CameraActivity.newIntent(this));
+			//startActivity(CaptureQRCodeActivity.newIntent(this));
 		}
 		
 		

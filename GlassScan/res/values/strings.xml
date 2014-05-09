@@ -3,9 +3,9 @@
 
     <string name="app_name">GlassScan</string>
     <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
+  
     <string name="glass_scan">Glass Scan</string>
-    <string name="label_share">e-mail to&#8230;</string>
+    <string name="label_share">Tap to e-mail</string>
     <string name="label_capture">Tap to capture</string>
 
     <!-- History -->

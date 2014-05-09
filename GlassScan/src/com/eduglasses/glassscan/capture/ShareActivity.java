@@ -76,7 +76,7 @@ public class ShareActivity extends Activity implements RecognitionListener {
 		
 		mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 		mGestureDetector = createGestureDetector(this);
-		
+		initializeSpeechRecognizer();
 		textview = (TextView) findViewById(R.id.textview);
 		
 		Bundle bundle = getIntent().getExtras();
@@ -94,7 +94,7 @@ public class ShareActivity extends Activity implements RecognitionListener {
 		super.onResume();
 		
 		Log.d(TAG, "onResume");
-		initializeSpeechRecognizer();
+		//initializeSpeechRecognizer();
 	}
 	
 	@Override
@@ -108,14 +108,14 @@ public class ShareActivity extends Activity implements RecognitionListener {
 	private void initializeSpeechRecognizer() {
 		
 		Log.d(TAG, "Inside initializeSpeechRecognizer " + speechFlag + " " + mSpeechRecognizer);
-		if(mSpeechRecognizer == null && speechFlag == 11) {
+		if(mSpeechRecognizer == null) {
 			
 			mSpeechRecognizer = SpeechRecognizer.createSpeechRecognizer(getApplicationContext());
 			mSpeechRecognizer.setRecognitionListener(this);
 			Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
 			//intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "pt");
 			intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-			mSpeechRecognizer.startListening(intent);
+			//mSpeechRecognizer.startListening(intent);
 			Log.d(TAG, "Start listing..." + SpeechRecognizer.isRecognitionAvailable(getApplicationContext()));
 		}
 	}
@@ -140,7 +140,7 @@ public class ShareActivity extends Activity implements RecognitionListener {
                 	Log.d(TAG, "Gesture.TAP");
                 	mAudioManager.playSoundEffect(Sounds.TAP);
                 	createAndSharePDF();
-                	destroySpeechRecognizer();
+                	//destroySpeechRecognizer();
                     return true;
                 }
                 return false;
@@ -214,8 +214,8 @@ public class ShareActivity extends Activity implements RecognitionListener {
 	        document.add(image2);*/
 
 	        document.close();
-	        
-	        //displaySpeechRecognizer();
+	        speechFlag = 11;
+	        displaySpeechRecognizer();
 	    } catch(Exception e){
 	      e.printStackTrace();
 	    }

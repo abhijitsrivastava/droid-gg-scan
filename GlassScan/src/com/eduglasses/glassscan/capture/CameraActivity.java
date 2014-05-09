@@ -2,15 +2,12 @@ package com.eduglasses.glassscan.capture;
 
 import java.io.IOException;
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -20,7 +17,6 @@ import android.view.WindowManager;
 import com.eduglasses.glassscan.BaseGlassActivity;
 import com.eduglasses.glassscan.R;
 import com.eduglasses.glassscan.image.ImageManager;
-import com.google.android.gms.auth.GoogleAuthUtil;
 
 /**
  * A placeholder fragment containing a simple view.
