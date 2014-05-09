@@ -3,17 +3,20 @@ package com.eduglasses.glassscan.capture;
 import java.io.IOException;
 import java.util.List;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import com.eduglass.utils.GoogleContactsAPI;
 import com.eduglass.utils.Utils;
@@ -49,7 +52,11 @@ public class CameraActivity extends BaseGlassActivity implements
 		mImageManager = new ImageManager(this);
 
 		mHasSurface = false;
-		Utils.updateContacts(this);
+		//Utils.updateContacts(this);
+		if (!GoogleContactsAPI.getInstance().isUpdated()) {
+			GoogleContactsAPI.getInstance().setUpdated(true);
+			new FetchContactTask().execute();
+		}
 		/*
 		 * Bundle bundle = getIntent().getExtras(); String credentials =
 		 * bundle.getString("QRCodeData"); Log.d(TAG, credentials);
@@ -197,6 +204,85 @@ public class CameraActivity extends BaseGlassActivity implements
 	@Override
 	public void surfaceDestroyed(SurfaceHolder holder) {
 		mHasSurface = false;
+	}
+	
+	class FetchContactTask extends AsyncTask<String, Void, String> {
+
+		private ProgressDialog progress = null;
+		
+	    @Override
+	    protected String doInBackground(String... params) {
+	        
+
+			String separator = "";
+			String emailString = "";
+			if (GoogleContactsAPI.getInstance().Login(
+					Utils.getStringPreferences(CameraActivity.this,
+							Utils.KEY_USERNAME),
+					Utils.getStringPreferences(CameraActivity.this,
+							Utils.KEY_PASSWORD))) {
+				List<ContactEntry> contactList = null;
+				StringBuilder emailText = new StringBuilder();
+				try {
+					contactList = GoogleContactsAPI.getInstance()
+							.getEntries();
+					for (ContactEntry contactEntry : contactList) {
+						for (Email email : contactEntry
+								.getEmailAddresses()) {
+							emailText.append(separator
+									+ email.getAddress());
+							separator = ",";
+						}
+					}
+					if (null != contactList) {
+						emailString = emailText.toString();
+					}
+					
+					//Log.d("Utils", "emails :" + emailText.toString());
+				} catch (Exception e) {
+					e.printStackTrace();
+					emailString = "exception";
+				}
+			}
+		
+	        return emailString;
+	    }
+
+	    @Override
+	    protected void onPostExecute(String result) {
+	       
+	    	if(!"".equals(result)) {
+	    	   
+	    		if(progress != null) {
+	    			progress.dismiss();
+						progress = null;
+	    		}
+	    		
+	    		if("exception".equals(result)) {
+	    			Toast.makeText(CameraActivity.this, "Getting error while fetching google contact. Please check your Internet connection and try again.", Toast.LENGTH_LONG).show();
+	    		} else {
+	    			Utils.saveStringPreferences(CameraActivity.this, Utils.KEY_EMAIL_TEXT, result);
+	    		}
+	       }
+	    }
+
+	    @Override
+	    protected void onPreExecute() {
+	    	if(progress == null) {
+	    		progress = ProgressDialog.show(CameraActivity.this, "Fetching google contact", "Please wait...");
+	    	}
+	    }
+
+	    @Override
+	    protected void onProgressUpdate(Void... values) {}
+		@Override
+		protected void onCancelled() {
+			super.onCancelled();
+			if(progress != null) {
+				progress.dismiss();
+				progress = null;
+			}
+		}
 	}
 
 }
