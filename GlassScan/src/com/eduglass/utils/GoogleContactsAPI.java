@@ -101,4 +101,8 @@ public class GoogleContactsAPI {
     
     return googleContacts;
   }
+  
+  public void destroy() {
+	  obj = null;
+  }
 }

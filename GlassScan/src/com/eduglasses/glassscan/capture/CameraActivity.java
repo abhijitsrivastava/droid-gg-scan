@@ -99,6 +99,12 @@ public class CameraActivity extends BaseGlassActivity implements
 	}
 
 	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		GoogleContactsAPI.getInstance().destroy();
+	}
+	
+	@Override
 	protected void onPause() {
 		if (!mHasSurface) {
 			SurfaceView surfaceView = (SurfaceView) findViewById(R.id.preview_view);
@@ -250,7 +256,7 @@ public class CameraActivity extends BaseGlassActivity implements
 
 	    @Override
 	    protected void onPostExecute(String result) {
-	       
+	    		       
 	    	if(!"".equals(result)) {
 	    	   
 	    		if(progress != null) {
@@ -268,8 +274,11 @@ public class CameraActivity extends BaseGlassActivity implements
 
 	    @Override
 	    protected void onPreExecute() {
+	    	//getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 	    	if(progress == null) {
 	    		progress = ProgressDialog.show(CameraActivity.this, "Fetching google contact", "Please wait...");
+	    		progress.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+	    		//progress.set
 	    	}
 	    }
 

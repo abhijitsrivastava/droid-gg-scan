@@ -30,6 +30,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.WindowManager;
 
 import com.eduglass.utils.Utils;
 import com.eduglasses.glassscan.R;
@@ -102,6 +103,7 @@ public final class CaptureQRCodeActivity extends BaseGlassActivity implements
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
         setContentView(R.layout.activity_capture);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         // uncomment to debug the application. 
         // android.os.Debug.waitForDebugger();
 
