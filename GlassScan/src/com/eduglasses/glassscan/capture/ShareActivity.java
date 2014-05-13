@@ -112,6 +112,9 @@ public class ShareActivity extends Activity implements RecognitionListener {
 
 		Log.d(TAG, "onDestroy");
 		destroySpeechRecognizer();
+		mAudioManager = null;
+		mGestureDetector = null;
+		contactList = null;
 	}
 
 	private void initializeSpeechRecognizer() {
@@ -361,12 +364,12 @@ public class ShareActivity extends Activity implements RecognitionListener {
 			List<String> results = data
 					.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
 			String spokenText = results.get(0).toLowerCase();
-
+			
 			if (speechFlag == 12 && !spokenText.equals("")) {
 
 				// Got subject line
 				subject = spokenText;
-				showToast("Select receipent e-mail");
+				showToast("Swipe left/right to scroll contacts");
 				// Open menu to select email
 				openOptionsMenu();
 
@@ -572,10 +575,16 @@ public class ShareActivity extends Activity implements RecognitionListener {
 	public boolean onOptionsItemSelected(MenuItem item) {
 
 		Log.d(TAG, item.getItemId() + "/" + item.getTitle());
+		
 		receipent = item.getTitle().toString();
 		mAudioManager.playSoundEffect(Sounds.TAP);
 		closeOptionsMenu();
-		sendEmail();
+		
+		if("".equals(receipent)) {
+			showToast("Contact not found");
+		} else {		
+			sendEmail();
+		}
 
 		return (super.onOptionsItemSelected(item));
 	}

@@ -102,6 +102,8 @@ public class CameraActivity extends BaseGlassActivity implements
 	public void onDestroy() {
 		super.onDestroy();
 		GoogleContactsAPI.getInstance().destroy();
+		mImageManager = null;
+		camera = null;
 	}
 	
 	@Override
@@ -275,10 +277,9 @@ public class CameraActivity extends BaseGlassActivity implements
 	    @Override
 	    protected void onPreExecute() {
 	    	//getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-	    	if(progress == null) {
+	    	if(progress == null && "".equals(Utils.getStringPreferences(CameraActivity.this, Utils.KEY_EMAIL_TEXT))) {
 	    		progress = ProgressDialog.show(CameraActivity.this, "Fetching google contact", "Please wait...");
 	    		progress.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-	    		//progress.set
 	    	}
 	    }
 
