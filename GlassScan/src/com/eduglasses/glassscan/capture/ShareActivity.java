@@ -36,6 +36,8 @@ import com.google.android.glass.touchpad.Gesture;
 import com.google.android.glass.touchpad.GestureDetector;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Image;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.PdfWriter;
 
 public class ShareActivity extends Activity implements RecognitionListener {
@@ -221,14 +223,17 @@ public class ShareActivity extends Activity implements RecognitionListener {
 			}
 
 			pdfFile.createNewFile();
-
 			PdfWriter.getInstance(document, new FileOutputStream(pdfFile));
-			document.open();
 
 			Image image = Image.getInstance(imageByte);
+			image.setOriginalData(imageByte);
 			image.scalePercent(40);
+			
+			//document.setHtmlStyleClass("width:" + image.getWidth());
+	        
+	        document.open();
 			document.add(image);
-
+			
 			/*
 			 * String imageUrl = "file://" + picturePath; Log.d(TAG, imageUrl);
 			 * Image image2 = Image.getInstance(new URL(imageUrl));
