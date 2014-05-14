@@ -16,12 +16,12 @@
 
 package com.google.zxing.client.android.wifi;
 
+import java.util.regex.Pattern;
+
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.util.Log;
-
-import java.util.regex.Pattern;
 
 import com.google.zxing.client.result.WifiParsedResult;
 

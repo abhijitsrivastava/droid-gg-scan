@@ -28,7 +28,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.eduglass.utils.GmailSender;
+import com.eduglass.utils.OAuth2Authenticator;
 import com.eduglass.utils.Utils;
 import com.eduglasses.glassscan.R;
 import com.google.android.glass.media.Sounds;
@@ -46,19 +46,20 @@ public class ShareActivity extends Activity implements RecognitionListener {
 	private static final int SPEECH_REQUEST = 0;
 	private int speechFlag = 11;
 	private GestureDetector mGestureDetector;
-	// private Bitmap captureImage;
+	
 	private byte[] imageByte;
 	private AudioManager mAudioManager;
 	private String pdfPath;
 	private ProgressDialog progressDialog;
 	List<Contact> contactList;
-	// private String email;
+	
 	private String subject;
 	private SpeechRecognizer mSpeechRecognizer = null;
 	private TextView textview;
 	private String username;
 	private String password;
 	private String receipent;
+	private Activity activity;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +67,7 @@ public class ShareActivity extends Activity implements RecognitionListener {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_share);
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+		activity = this;
 
 		username = Utils.getStringPreferences(this, Utils.KEY_USERNAME);
 		password = Utils.getStringPreferences(this, Utils.KEY_PASSWORD);
@@ -464,9 +466,18 @@ public class ShareActivity extends Activity implements RecognitionListener {
 				showProgressDialog("Sending e-mail", "Please wait...");
 
 				try {
-					GmailSender sender = new GmailSender(username, password);
-					sender.addAttachment(pdfPath, "PDF");
-					sender.sendMail(subject, "", username, receipent);
+					OAuth2Authenticator auth2Authenticator = new OAuth2Authenticator(
+							Utils.getStringPreferences(activity,
+									Utils.KEY_USERNAME),
+							Utils.getStringPreferences(activity,
+									Utils.KEY_ACCESS_TOKEN));
+					auth2Authenticator.addAttachment(pdfPath);
+
+					Thread.currentThread().setContextClassLoader(
+							getClass().getClassLoader());
+
+					auth2Authenticator.sendMail(subject, receipent);
+
 					mAudioManager.playSoundEffect(Sounds.SUCCESS);
 					dissmissProgress();
 					showToast("Email sent successfully");

@@ -3,6 +3,7 @@ package com.eduglasses.glassscan.capture;
 import java.io.IOException;
 import java.util.List;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -19,6 +20,7 @@ import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.eduglass.utils.GoogleContactsAPI;
+import com.eduglass.utils.ServerConnection;
 import com.eduglass.utils.Utils;
 import com.eduglasses.glassscan.BaseGlassActivity;
 import com.eduglasses.glassscan.R;
@@ -38,6 +40,7 @@ public class CameraActivity extends BaseGlassActivity implements
 	private Camera camera;
 	private boolean mHasSurface;
 	private ImageManager mImageManager;
+	private Activity activity;
 
 	public static Intent newIntent(Context context) {
 		Intent intent = new Intent(context, CameraActivity.class);
@@ -49,10 +52,11 @@ public class CameraActivity extends BaseGlassActivity implements
 		super.onCreate(icicle);
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		setContentView(R.layout.activity_camera);
+		activity = this;
 		mImageManager = new ImageManager(this);
 
 		mHasSurface = false;
-		//Utils.updateContacts(this);
+		// Utils.updateContacts(this);
 		if (!GoogleContactsAPI.getInstance().isUpdated()) {
 			GoogleContactsAPI.getInstance().setUpdated(true);
 			new FetchContactTask().execute();
@@ -90,7 +94,6 @@ public class CameraActivity extends BaseGlassActivity implements
 	 * names.length; i++) { names[i] = accounts[i].name; } return names; }
 	 */
 
-
 	@Override
 	public void onResume() {
 		// TODO Auto-generated method stub
@@ -105,7 +108,7 @@ public class CameraActivity extends BaseGlassActivity implements
 		mImageManager = null;
 		camera = null;
 	}
-	
+
 	@Override
 	protected void onPause() {
 		if (!mHasSurface) {
@@ -213,82 +216,96 @@ public class CameraActivity extends BaseGlassActivity implements
 	public void surfaceDestroyed(SurfaceHolder holder) {
 		mHasSurface = false;
 	}
-	
+
 	class FetchContactTask extends AsyncTask<String, Void, String> {
 
 		private ProgressDialog progress = null;
-		
-	    @Override
-	    protected String doInBackground(String... params) {
-	        
+
+		@Override
+		protected String doInBackground(String... params) {
 
 			String separator = "";
 			String emailString = "";
+
+			ServerConnection.postHttpsUrlConnectionForAccessToken(activity);
+
 			if (GoogleContactsAPI.getInstance().Login(
-					Utils.getStringPreferences(CameraActivity.this,
-							Utils.KEY_USERNAME),
-					Utils.getStringPreferences(CameraActivity.this,
-							Utils.KEY_PASSWORD))) {
+					Utils.getStringPreferences(getApplicationContext(),
+							Utils.KEY_ACCESS_TOKEN))) {
 				List<ContactEntry> contactList = null;
 				StringBuilder emailText = new StringBuilder();
 				try {
-					contactList = GoogleContactsAPI.getInstance()
-							.getEntries();
+					contactList = GoogleContactsAPI.getInstance().getEntries();
+
+					String emailAddress = GoogleContactsAPI.getInstance()
+							.getEmailAddress();
+					Utils.saveStringPreferences(getApplicationContext(),
+							Utils.KEY_USERNAME, emailAddress);
+					Log.d("CameraActivity", "emailAddress : " + emailAddress);
+
 					for (ContactEntry contactEntry : contactList) {
-						for (Email email : contactEntry
-								.getEmailAddresses()) {
-							emailText.append(separator
-									+ email.getAddress());
+						for (Email email : contactEntry.getEmailAddresses()) {
+							emailText.append(separator + email.getAddress());
 							separator = ",";
 						}
 					}
 					if (null != contactList) {
 						emailString = emailText.toString();
 					}
-					
-					//Log.d("Utils", "emails :" + emailText.toString());
+
+					// Log.d("Utils", "emails :" + emailText.toString());
 				} catch (Exception e) {
 					e.printStackTrace();
 					emailString = "exception";
 				}
 			}
-		
-	        return emailString;
-	    }
 
-	    @Override
-	    protected void onPostExecute(String result) {
-	    		       
-	    	if(!"".equals(result)) {
-	    	   
-	    		if(progress != null) {
-	    			progress.dismiss();
-						progress = null;
-	    		}
-	    		
-	    		if("exception".equals(result)) {
-	    			Toast.makeText(CameraActivity.this, "Getting error while fetching google contact. Please check your Internet connection and try again.", Toast.LENGTH_LONG).show();
-	    		} else {
-	    			Utils.saveStringPreferences(CameraActivity.this, Utils.KEY_EMAIL_TEXT, result);
-	    		}
-	       }
-	    }
+			return emailString;
+		}
 
-	    @Override
-	    protected void onPreExecute() {
-	    	//getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-	    	if(progress == null && "".equals(Utils.getStringPreferences(CameraActivity.this, Utils.KEY_EMAIL_TEXT))) {
-	    		progress = ProgressDialog.show(CameraActivity.this, "Fetching google contact", "Please wait...");
-	    		progress.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-	    	}
-	    }
+		@Override
+		protected void onPostExecute(String result) {
 
-	    @Override
-	    protected void onProgressUpdate(Void... values) {}
+			if (!"".equals(result)) {
+
+				if (progress != null) {
+					progress.dismiss();
+					progress = null;
+				}
+
+				if ("exception".equals(result)) {
+					Toast.makeText(
+							CameraActivity.this,
+							"Getting error while fetching google contact. Please check your Internet connection and try again.",
+							Toast.LENGTH_LONG).show();
+				} else {
+					Utils.saveStringPreferences(CameraActivity.this,
+							Utils.KEY_EMAIL_TEXT, result);
+				}
+			}
+		}
+
+		@Override
+		protected void onPreExecute() {
+			// getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+			if (progress == null
+					&& "".equals(Utils.getStringPreferences(
+							CameraActivity.this, Utils.KEY_EMAIL_TEXT))) {
+				progress = ProgressDialog.show(CameraActivity.this,
+						"Fetching google contact", "Please wait...");
+				progress.getWindow().addFlags(
+						WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+			}
+		}
+
+		@Override
+		protected void onProgressUpdate(Void... values) {
+		}
+
 		@Override
 		protected void onCancelled() {
 			super.onCancelled();
-			if(progress != null) {
+			if (progress != null) {
 				progress.dismiss();
 				progress = null;
 			}

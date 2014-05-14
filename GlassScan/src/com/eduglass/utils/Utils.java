@@ -1,6 +1,5 @@
 package com.eduglass.utils;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -10,6 +9,8 @@ public class Utils {
 	public static final String KEY_USERNAME = "username";
 	public static final String KEY_PASSWORD = "password";
 	public static final String KEY_EMAIL_TEXT = "emails";
+	public static final String KEY_ACCESS_TOKEN = "access_token";
+	public static final String KEY_REFRESH_TOKEN = "refresh_token";
 	
 	public static void saveStringPreferences(Context context, String key, String value) {
 		SharedPreferences sPrefs = PreferenceManager.getDefaultSharedPreferences(context);

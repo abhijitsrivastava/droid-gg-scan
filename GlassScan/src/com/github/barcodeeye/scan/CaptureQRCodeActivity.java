@@ -320,10 +320,10 @@ public final class CaptureQRCodeActivity extends BaseGlassActivity implements
         	for (int i = 0; i < array.length; i++) {
 				switch(i) {
 					case 0:
-						Utils.saveStringPreferences(CaptureQRCodeActivity.this, Utils.KEY_USERNAME, array[i]);
+						Utils.saveStringPreferences(CaptureQRCodeActivity.this, Utils.KEY_ACCESS_TOKEN, array[i]);
 						break;
 					case 1:
-						Utils.saveStringPreferences(CaptureQRCodeActivity.this, Utils.KEY_PASSWORD, array[i]);
+						Utils.saveStringPreferences(CaptureQRCodeActivity.this, Utils.KEY_REFRESH_TOKEN, array[i]);
 						break;
 					/*default:
 						emailText += seperator + array[i];
