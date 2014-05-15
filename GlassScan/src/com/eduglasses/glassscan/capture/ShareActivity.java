@@ -2,6 +2,9 @@ package com.eduglasses.glassscan.capture;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,7 +43,7 @@ import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.PdfWriter;
 
-public class ShareActivity extends Activity implements RecognitionListener {
+public class ShareActivity extends Activity {
 
 	private static final String TAG = "GlassScan";
 	private static final int SPEECH_REQUEST = 0;
@@ -55,11 +58,11 @@ public class ShareActivity extends Activity implements RecognitionListener {
 	
 	private String subject;
 	private SpeechRecognizer mSpeechRecognizer = null;
-	private TextView textview;
 	private String username;
 	private String password;
 	private String receipent;
 	private Activity activity;
+	private boolean shareOptionFlag = true;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -89,7 +92,6 @@ public class ShareActivity extends Activity implements RecognitionListener {
 		mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 		mGestureDetector = createGestureDetector(this);
 		initializeSpeechRecognizer();
-		textview = (TextView) findViewById(R.id.textview);
 
 		Bundle bundle = getIntent().getExtras();
 		imageByte = bundle.getByteArray("image");
@@ -106,6 +108,7 @@ public class ShareActivity extends Activity implements RecognitionListener {
 	protected void onResume() {
 		super.onResume();
 
+		//shareOptionFlag = true;
 		Log.d(TAG, "onResume");
 		// initializeSpeechRecognizer();
 	}
@@ -123,22 +126,15 @@ public class ShareActivity extends Activity implements RecognitionListener {
 
 	private void initializeSpeechRecognizer() {
 
-		Log.d(TAG, "Inside initializeSpeechRecognizer " + speechFlag + " "
-				+ mSpeechRecognizer);
 		if (mSpeechRecognizer == null) {
 
 			mSpeechRecognizer = SpeechRecognizer
 					.createSpeechRecognizer(getApplicationContext());
-			mSpeechRecognizer.setRecognitionListener(this);
+
 			Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
 			// intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "pt");
 			intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
 					RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-			// mSpeechRecognizer.startListening(intent);
-			Log.d(TAG,
-					"Start listing..."
-							+ SpeechRecognizer
-									.isRecognitionAvailable(getApplicationContext()));
 		}
 	}
 
@@ -162,7 +158,9 @@ public class ShareActivity extends Activity implements RecognitionListener {
 				if (gesture == Gesture.TAP) {
 					Log.d(TAG, "Gesture.TAP");
 					mAudioManager.playSoundEffect(Sounds.TAP);
-					createAndSharePDF();
+					openOptionsMenu();
+					showToast("Swipe left/right to scroll");
+					//createAndSharePDF();
 					// destroySpeechRecognizer();
 					return true;
 				}
@@ -199,7 +197,7 @@ public class ShareActivity extends Activity implements RecognitionListener {
 		return false;
 	}
 
-	private void createAndSharePDF() {
+	private void createAndSharePDF(boolean sendEmail) {
 
 		Log.d(TAG, "createAndSharePDF");
 		Log.d(TAG, "Speech flag : " + speechFlag);
@@ -231,96 +229,21 @@ public class ShareActivity extends Activity implements RecognitionListener {
 			image.setOriginalData(imageByte);
 			image.scalePercent(40);
 			
-			//document.setHtmlStyleClass("width:" + image.getWidth());
-	        
-	        document.open();
+			document.open();
 			document.add(image);
 			
-			/*
-			 * String imageUrl = "file://" + picturePath; Log.d(TAG, imageUrl);
-			 * Image image2 = Image.getInstance(new URL(imageUrl));
-			 * document.add(image2);
-			 */
-
 			document.close();
 			speechFlag = 11;
-			displaySpeechRecognizer();
+			
+			if(sendEmail) {
+				displaySpeechRecognizer();
+			} else {
+				uploadToDrive();
+			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
-		/*
-		 * final Intent emailIntent = new
-		 * Intent(android.content.Intent.ACTION_SEND);
-		 * emailIntent.setType("plain/text");
-		 * emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[]
-		 * { "eshankarprasad@gmail.com" });
-		 * emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT,
-		 * "EduGlasses-Glass Scan");
-		 * emailIntent.putExtra(android.content.Intent.EXTRA_TEXT,
-		 * "Email Body"); emailIntent.putExtra(Intent.EXTRA_STREAM,
-		 * Uri.parse(pdfUrl)); startActivity(Intent.createChooser(emailIntent,
-		 * "Send mail..."));
-		 */
-
-		/*
-		 * progress.setTitle("Sending email");
-		 * 
-		 * 
-		 * // Sending email Thread t = new Thread(new Runnable() {
-		 * 
-		 * @Override public void run() { try { GmailSender sender = new
-		 * GmailSender("qaitdev@gmail.com", "testing1");
-		 * sender.addAttachment(pdfPath, "PDF");
-		 * sender.sendMail("Edu-Glass Scan", "PDF is attached",
-		 * "qaitdev@gmail.com", "eshankarprasad@gmail.com");
-		 * 
-		 * Log.d(TAG, "Email sent successfully");
-		 * mAudioManager.playSoundEffect(Sounds.SUCCESS); progress.dismiss();
-		 * ShareActivity.this.finish(); } catch (Exception e) { Log.e(TAG,
-		 * e.getMessage(), e); progress.dismiss(); ShareActivity.this.finish();
-		 * Toast.makeText(ShareActivity.this, "Error occurred, try again.",
-		 * Toast.LENGTH_LONG).show(); } } }); t.start();
-		 */
-
-		// Try to fetching email id from glass
-		/*
-		 * Thread contactThread = new Thread(new Runnable() {
-		 * 
-		 * @Override public void run() {
-		 * 
-		 * String name;
-		 * 
-		 * ContentResolver cr = getContentResolver(); Cursor cur =
-		 * cr.query(ContactsContract.Contacts.CONTENT_URI, null,null, null,
-		 * null); if (cur.getCount() > 0) {
-		 * 
-		 * ArrayList<String> emailNameList=new ArrayList<String>();
-		 * ArrayList<String> emailPhoneList=new ArrayList<String>(); while
-		 * (cur.moveToNext()) {
-		 * 
-		 * String id =
-		 * cur.getString(cur.getColumnIndex(ContactsContract.Contacts._ID));
-		 * name =
-		 * cur.getString(cur.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME
-		 * ));
-		 * 
-		 * Cursor emails =
-		 * getContentResolver().query(ContactsContract.CommonDataKinds
-		 * .Email.CONTENT_URI,null,
-		 * ContactsContract.CommonDataKinds.Email.CONTACT_ID+ " = " + id, null,
-		 * null); while (emails.moveToNext()) {
-		 * 
-		 * // This would allow you get several email addresses String
-		 * emailAddress =
-		 * emails.getString(emails.getColumnIndex(ContactsContract
-		 * .CommonDataKinds.Email.DATA)); Log.v(TAG, emailAddress); if
-		 * ((!emailAddress.equalsIgnoreCase(""))&&(emailAddress.contains("@")))
-		 * {
-		 * 
-		 * emailNameList.add(name); emailPhoneList.add(emailAddress); } }
-		 * emails.close(); } } } }); contactThread.start();
-		 */
 	}
 
 	private void displaySpeechRecognizer() {
@@ -376,14 +299,11 @@ public class ShareActivity extends Activity implements RecognitionListener {
 
 				// Got subject line
 				subject = spokenText;
-				showToast("Swipe left/right to scroll contacts");
+				shareOptionFlag = false;
+				
 				// Open menu to select email
 				openOptionsMenu();
-
-			} else if (spokenText.contains("drive")) {
-
-				// Flag for handling drive
-				speechFlag = 2;
+				showToast("Swipe left/right to scroll");
 
 			} else {
 
@@ -393,6 +313,7 @@ public class ShareActivity extends Activity implements RecognitionListener {
 		} else {
 
 			speechFlag = 11;
+			shareOptionFlag = true;
 			destroySpeechRecognizer();
 		}
 	}
@@ -477,7 +398,7 @@ public class ShareActivity extends Activity implements RecognitionListener {
 							getClass().getClassLoader());
 
 					auth2Authenticator.sendMail(subject, receipent);
-
+					
 					mAudioManager.playSoundEffect(Sounds.SUCCESS);
 					dissmissProgress();
 					showToast("Email sent successfully");
@@ -488,96 +409,61 @@ public class ShareActivity extends Activity implements RecognitionListener {
 					ShareActivity.this.finish();
 					showToast("Error occurred, try again");
 				}
+				
+				shareOptionFlag = true;
 			}
 		});
 		t.start();
 	}
 
-	// Start implementing RecognizerListener methods
-	@Override
-	public void onRmsChanged(float rmsdB) {
-		// Log.d(TAG, "onRmsChanged");
-	}
-
-	@Override
-	public void onResults(Bundle results) {
-
-		Log.d(TAG, "onResults");
-		ArrayList<String> strlist = results
-				.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
-		for (int i = 0; i < strlist.size(); i++) {
-			Log.d(TAG, "result = " + strlist.get(i));
-		}
-		String spokenText = "";
-		if (strlist.size() > 0) {
-			spokenText = strlist.get(0);
-		}
-
-		if (spokenText.contains("mail")) {
-			mAudioManager.playSoundEffect(Sounds.SUCCESS);
-			destroySpeechRecognizer();
-			createAndSharePDF();
-			speechFlag = 11;
-			displaySpeechRecognizer();
-		}
-	}
-
-	@Override
-	public void onReadyForSpeech(Bundle params) {
-		Log.d(TAG, "onReadyForSpeech");
-	}
-
-	@Override
-	public void onPartialResults(Bundle partialResults) {
-		Log.d(TAG, "onPartialResults");
-	}
-
-	@Override
-	public void onEvent(int eventType, Bundle params) {
-		Log.d(TAG, "onEvent");
-	}
-
-	@Override
-	public void onError(int error) {
-		Log.e(TAG, "onError : " + error);
+	private void uploadToDrive() {
+		Log.d(TAG, "uploadToDrive");
+		shareOptionFlag = true;
 		speechFlag = 11;
 		destroySpeechRecognizer();
-		initializeSpeechRecognizer();
+		
+		Thread uploadToDriveThread = new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				
+				try {
+					showProgressDialog("Uploading to google drive", "Please wait...");
+					Utils.insertFile(Utils.getStringPreferences(activity,
+										Utils.KEY_ACCESS_TOKEN), "Glass-Scan", "Uploaded via Google Glass", "", "application/pdf", pdfPath);
+					dissmissProgress();
+					ShareActivity.this.finish();
+					showToast("Uploaded successfully");
+				} catch (GeneralSecurityException e) {
+					showToast("Error occurred, try again...");
+					dissmissProgress();
+					Log.e(TAG, e.getMessage());
+					e.printStackTrace();
+				} catch (IOException e) {
+					showToast("Error occurred, try again...");
+					dissmissProgress();
+					Log.e(TAG, e.getMessage());
+					e.printStackTrace();
+				} catch (URISyntaxException e) {
+					showToast("Error occurred, try again...");
+					dissmissProgress();
+					Log.e(TAG, e.getMessage());
+					e.printStackTrace();
+				}
+				
+			}
+		});
+		uploadToDriveThread.start();
 	}
-
-	@Override
-	public void onEndOfSpeech() {
-		Log.d(TAG, "onEndOfSpeech");
-	}
-
-	@Override
-	public void onBufferReceived(byte[] buffer) {
-		Log.d(TAG, "onBufferReceived");
-	}
-
-	@Override
-	public void onBeginningOfSpeech() {
-		Log.d(TAG, "onBeginningOfSpeech");
-	}
-
-	// End implementing RecognizerListener methods
-
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		/*
 		 * MenuInflater inflater = getMenuInflater();
 		 * inflater.inflate(R.menu.magic, menu);
 		 */
-
-		for (int i = 0; i < contactList.size(); i++) {
-			// menu.add(0, i + 1, Menu.NONE, contactList.get(i).getEmail());
-
-			menu.add(0, i + 1, Menu.NONE,
-					wrapInSpan(contactList.get(i).getEmail()))
-					.setTitleCondensed(contactList.get(i).getEmail());
-		}
-
-		Log.d("Creating options menu", "True");
+		
+		Log.d(TAG, "Creating options menu: True");
 		return true;
 	}
 
@@ -592,23 +478,48 @@ public class ShareActivity extends Activity implements RecognitionListener {
 
 		Log.d(TAG, item.getItemId() + "/" + item.getTitle());
 		
-		receipent = item.getTitle().toString();
-		mAudioManager.playSoundEffect(Sounds.TAP);
-		closeOptionsMenu();
-		
-		if("".equals(receipent)) {
-			showToast("Contact not found");
-		} else {		
-			sendEmail();
+		if(shareOptionFlag) {
+			
+			createAndSharePDF("e-mail".equalsIgnoreCase("" + item.getTitle()));
+			
+		} else {
+			
+			receipent = item.getTitle().toString();
+			mAudioManager.playSoundEffect(Sounds.TAP);
+			closeOptionsMenu();
+			
+			if("".equals(receipent)) {
+				
+				showToast("Contact not found");
+			} else {		
+				sendEmail();
+			}
 		}
-
+		
 		return (super.onOptionsItemSelected(item));
 	}
 
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
 
-		Log.d("Preparing options menu", "True");
+		Log.d(TAG, "Preparing options menu: True");
+		Log.d(TAG, "shareOptionFlag: " + shareOptionFlag);
+		menu.clear();
+		if(shareOptionFlag) {
+			
+			menu.add(0, 1, Menu.NONE, "e-mail");
+			menu.add(0, 2, Menu.NONE, "Drive");
+		} else {
+			
+			for (int i = 0; i < contactList.size(); i++) {
+				// menu.add(0, i + 1, Menu.NONE, contactList.get(i).getEmail());
+	
+				menu.add(0, i + 1, Menu.NONE,
+						wrapInSpan(contactList.get(i).getEmail()))
+						.setTitleCondensed(contactList.get(i).getEmail());
+			}
+		}
+		
 		return super.onPrepareOptionsMenu(menu);
 	}
 }
