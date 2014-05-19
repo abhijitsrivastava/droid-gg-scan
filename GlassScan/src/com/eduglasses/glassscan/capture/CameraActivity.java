@@ -34,7 +34,7 @@ import com.google.gdata.data.extensions.Email;
 public class CameraActivity extends BaseGlassActivity implements
 		SurfaceHolder.Callback {
 
-	private static final String TAG = CameraActivity.class.getSimpleName();
+	private static final String TAG = "GlassScan";
 	private static final String IMAGE_PREFIX = "GlassScan_";
 
 	private Camera camera;
@@ -50,7 +50,6 @@ public class CameraActivity extends BaseGlassActivity implements
 	@Override
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
-		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		setContentView(R.layout.activity_camera);
 		activity = this;
 		mImageManager = new ImageManager(this);
@@ -118,6 +117,13 @@ public class CameraActivity extends BaseGlassActivity implements
 		}
 		camera.release();
 		super.onPause();
+		Log.d(TAG, "onPause");
+	}
+	
+	@Override
+	protected void onStop() {
+		super.onStop();
+		Log.d(TAG, "onStop");
 	}
 
 	private void startCamera() {
@@ -140,18 +146,59 @@ public class CameraActivity extends BaseGlassActivity implements
 		if (surfaceHolder == null) {
 			throw new IllegalStateException("No SurfaceHolder provided");
 		}
-		camera = Camera.open();
+		
 		try {
+			camera = Camera.open();
 			camera.setPreviewDisplay(surfaceHolder);
 		} catch (IOException e) {
+			Toast.makeText(CameraActivity.this, "Unable to start camera, please restart and try again",  Toast.LENGTH_LONG).show();
+			Log.d(TAG, e.getMessage());
+			e.printStackTrace();
+		} catch (Exception e) {
+			Toast.makeText(CameraActivity.this, "Unable to start camera, please restart and try again",  Toast.LENGTH_LONG).show();
+			Log.d(TAG, e.getMessage());
 			e.printStackTrace();
 		}
 		camera.startPreview();
+		/*camera.setPreviewCallback(new PreviewCallback() {
+			
+			@Override
+			public void onPreviewFrame(byte[] data, Camera camera) {
+				if(takePicture) {
+					
+					Log.d(TAG, "Data size : " + data.length);
+					ByteArrayOutputStream out = new ByteArrayOutputStream();
+					int width = camera.getParameters().getPreviewSize().width;
+					int height = camera.getParameters().getPreviewSize().height;
+					
+					YuvImage yuvImage = new YuvImage(data, ImageFormat.NV21, width, height, null);
+					yuvImage.compressToJpeg(new Rect(0, 0, width, height), 100, out);
+					final byte[] imageBytes = out.toByteArray();
+					//Bitmap image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+					//finish();
+					
+					Log.d(TAG, "Height : " + height + " Width : " + width);
+					
+					final Handler handler = new Handler();
+					handler.postDelayed(new Runnable() {
+					  @Override
+					  public void run() {
+						  Intent intent = new Intent(CameraActivity.this, ShareActivity.class);
+							intent.putExtra("image", imageBytes);
+							startActivity(intent);
+					  }
+					}, 750);
+					
+					takePicture = false;
+				}
+			}
+		});*/
 	}
 
 	@Override
 	protected boolean onTap() {
 		camera.takePicture(null, null, mPicture);
+		//takePicture = true;
 		return super.onTap();
 	}
 
