@@ -340,7 +340,7 @@ public class CameraActivity extends BaseGlassActivity implements
 			}
 		*/}
 
-		@Override
+	/*	@Override
 		protected void onPreExecute() {
 			// getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 			if (progress == null
@@ -352,7 +352,7 @@ public class CameraActivity extends BaseGlassActivity implements
 						WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 			}
 		}
-
+*/
 		@Override
 		protected void onProgressUpdate(Void... values) {
 		}

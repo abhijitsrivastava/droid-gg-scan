@@ -123,7 +123,8 @@ public class GoogleContactsAPI {
 			googleContacts.addAll(feed.getEntries());
 			query.setStartIndex(feed.getEntries().size()
 					+ query.getStartIndex());
-
+			// Breaking the loop ones we get the auther email adddress.
+			break;
 		} while (feed.getTotalResults() > query.getStartIndex());
 
 		setEmailAddress(feed.getAuthors().get(0).getEmail());
