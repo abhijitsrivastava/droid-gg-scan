@@ -313,6 +313,9 @@ public final class CaptureQRCodeActivity extends BaseGlassActivity implements
         /*for(String s : result){
             System.out.println(">"+s+"<");
         }*/
+        
+        String emailText = "";
+        String seperator = "";
                 
         if (scanedMessage != null) {
         	Log.d("inside if", "qr code matched");        	
@@ -325,13 +328,14 @@ public final class CaptureQRCodeActivity extends BaseGlassActivity implements
 					case 1:
 						Utils.saveStringPreferences(CaptureQRCodeActivity.this, Utils.KEY_REFRESH_TOKEN, array[i]);
 						break;
-					/*default:
+					default:
 						emailText += seperator + array[i];
 						seperator = ",";
-						break;*/
+						break;
 				}
 			}
         	
+        	Utils.saveStringPreferences(CaptureQRCodeActivity.this, Utils.KEY_EMAIL_TEXT, emailText);
         	finish();
         	Intent i = new Intent(this, CameraActivity.class);
         	//i.putExtra("QRCodeData", scanedMessage);

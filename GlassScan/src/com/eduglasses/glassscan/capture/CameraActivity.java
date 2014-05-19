@@ -229,42 +229,50 @@ public class CameraActivity extends BaseGlassActivity implements
 
 			ServerConnection.postHttpsUrlConnectionForAccessToken(activity);
 
-			if (GoogleContactsAPI.getInstance().Login(
-					Utils.getStringPreferences(getApplicationContext(),
-							Utils.KEY_ACCESS_TOKEN))) {
-				List<ContactEntry> contactList = null;
-				StringBuilder emailText = new StringBuilder();
-				try {
-					contactList = GoogleContactsAPI.getInstance().getEntries();
+			if (Utils.getStringPreferences(getApplicationContext(),
+					Utils.KEY_USERNAME).isEmpty()) {
+				Log.d("CameraActivity", "FetchContactTask : doInBackground : inside getting username");
+				if (GoogleContactsAPI.getInstance().Login(
+						Utils.getStringPreferences(getApplicationContext(),
+								Utils.KEY_ACCESS_TOKEN))) {
+					List<ContactEntry> contactList = null;
+					StringBuilder emailText = new StringBuilder();
+					try {
+						contactList = GoogleContactsAPI.getInstance()
+								.getEntries();
 
-					String emailAddress = GoogleContactsAPI.getInstance()
-							.getEmailAddress();
-					Utils.saveStringPreferences(getApplicationContext(),
-							Utils.KEY_USERNAME, emailAddress);
-					Log.d("CameraActivity", "emailAddress : " + emailAddress);
-
-					for (ContactEntry contactEntry : contactList) {
-						for (Email email : contactEntry.getEmailAddresses()) {
-							emailText.append(separator + email.getAddress());
-							separator = ",";
+						String emailAddress = GoogleContactsAPI.getInstance()
+								.getEmailAddress();
+						Utils.saveStringPreferences(getApplicationContext(),
+								Utils.KEY_USERNAME, emailAddress);
+						Log.d("CameraActivity", "emailAddress : "
+								+ emailAddress);
+/*
+						for (ContactEntry contactEntry : contactList) {
+							for (Email email : contactEntry.getEmailAddresses()) {
+								emailText
+										.append(separator + email.getAddress());
+								separator = ",";
+							}
 						}
+						if (null != contactList) {
+							emailString = emailText.toString();
+						}
+*/
+						// Log.d("Utils", "emails :" + emailText.toString());
+					} catch (Exception e) {
+						e.printStackTrace();
+						emailString = "exception";
 					}
-					if (null != contactList) {
-						emailString = emailText.toString();
-					}
-
-					// Log.d("Utils", "emails :" + emailText.toString());
-				} catch (Exception e) {
-					e.printStackTrace();
-					emailString = "exception";
 				}
 			}
 
 			return emailString;
+		
 		}
 
 		@Override
-		protected void onPostExecute(String result) {
+		protected void onPostExecute(String result) {/*
 
 			if (!"".equals(result)) {
 
@@ -283,7 +291,7 @@ public class CameraActivity extends BaseGlassActivity implements
 							Utils.KEY_EMAIL_TEXT, result);
 				}
 			}
-		}
+		*/}
 
 		@Override
 		protected void onPreExecute() {
