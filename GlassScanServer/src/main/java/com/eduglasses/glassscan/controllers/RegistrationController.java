@@ -127,34 +127,38 @@ public class RegistrationController {
 		stringBuilder.append(",");
 		stringBuilder.append(refreshTokenString);
 		stringBuilder.append(",");
-		Iterator<String> itr= selectedEmailList.iterator();
-		while(itr.hasNext()){
-			stringBuilder.append(itr.next()).append(",");
+		if (null == selectedEmailList) {
+			return "selectContact";
+		} else if (selectedEmailList.size() > 20) {
+			return "selectContact";
+		} else {
+			Iterator<String> itr = selectedEmailList.iterator();
+			while (itr.hasNext()) {
+				stringBuilder.append(itr.next()).append(",");
+			}
+
+			String QRCodeFileLoc = PropertiesFileReaderUtil
+					.getApplicationProperty("qr.code.storage.path");
+
+			boolean isQRCodeGenerated = GlassScanUtil.generateQRCode(
+					stringBuilder.toString(), code, QRCodeFileLoc);
+
+			if (!isQRCodeGenerated) {
+
+				String serverURL = PropertiesFileReaderUtil
+						.getApplicationProperty("server.url");
+				String QRCodeURL = PropertiesFileReaderUtil
+						.getApplicationProperty("qr.code.url");
+				String QRCodeImageURL = serverURL
+						+ "/"
+						+ QRCodeURL
+						+ "/"
+						+ code.replace(".", "_").replace(",", "_")
+								.replace("/", "_").replace("\\", "_") + ".png";
+				map.addAttribute("QRCodeImageURL", QRCodeImageURL);
+			}
+			return "QRCode";
 		}
-		
-		
-		
-		String QRCodeFileLoc = PropertiesFileReaderUtil
-				.getApplicationProperty("qr.code.storage.path");
-
-		boolean isQRCodeGenerated = GlassScanUtil.generateQRCode(
-				stringBuilder.toString(), code, QRCodeFileLoc);
-
-		if (!isQRCodeGenerated) {
-
-			String serverURL = PropertiesFileReaderUtil
-					.getApplicationProperty("server.url");
-			String QRCodeURL = PropertiesFileReaderUtil
-					.getApplicationProperty("qr.code.url");
-			String QRCodeImageURL = serverURL
-					+ "/"
-					+ QRCodeURL
-					+ "/"
-					+ code.replace(".", "_").replace(",", "_")
-							.replace("/", "_").replace("\\", "_") + ".png";
-			map.addAttribute("QRCodeImageURL", QRCodeImageURL);
-		}
-		return "QRCode";
 	}
 	
 	

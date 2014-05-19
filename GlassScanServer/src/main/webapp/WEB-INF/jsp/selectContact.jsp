@@ -7,15 +7,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
 		<meta content="width=device-width, initial-scale=1" name="viewport"/>
-		
 		<link rel="stylesheet" href="css/bootstrap.min.css" type="text/css"/>
 		<link rel="stylesheet" href="css/generic.css" type="text/css"/>
-
 		<script type="text/javascript" src='js/jquery-1.11.0.min.js'></script>
 		<script type="text/javascript" src='js/bootstrap.min.js'></script>
 		
 		<script type="text/javascript">
-		int contactSelectedCount= 0;
 		function changeEmailSelectedCount(id) {
 			alert(id);
 			var status = $('#selectAll').is(':checked');
@@ -24,10 +21,7 @@
 			} else {
 				$('.noClass').prop('checked', false);
 			}
-		}
-		
-		
-		
+		}		
 		</script>
 		
 	</head>
@@ -36,49 +30,42 @@
 		<div class="container">
 		
 			<div class="background_body">
-			
-				<div style=" clear: both; text-align: right;margin-bottom:30px;">
-					<h2 class="legend" style="margin-bottom:0px;">Select Google contacts</h2>
-				</div>
-				
-				<div class="form-addEditLogo">
-				
-				
-        		
-        			<div align="center">Select Google Contacts for QR Code
-        			</div>
-        		
-        		<form:form commandName="selectContactForm" action="selectedEmailsForQRCode.htm" method="POST" id="logoStatusChangeForm"> 
-					 
+
+			<div style="clear: both; text-align: right; margin-bottom: 30px;">
+				<h2 class="legend" style="margin-bottom: 0px;">Select Google Contacts</h2>
+			</div>
+			<div class="form-addEditLogo">
+				<div align="center">Select Google Contacts for GlassScan</div>
+				<form:form commandName="selectContactForm"
+					action="selectedEmailsForQRCode.htm" method="POST"
+					id="logoStatusChangeForm">
+
 					<table class="table table-hover table-striped">
 						<thead class="header_table">
-        					<tr>
-        						<th></th>
-            					<th>Email Id</th>
+							<tr>
+								<th></th>
+								<th>Email Id</th>
 								<div class="form-group">
 									<div class="col-xs-offset-9 col-xs-8">
 										<button type="submit" class="btn btn-primary" value="Submit">Generate QR Code</button>
 									</div>
 								</div>
 							</tr>
-       					 </thead>
-       					 <tbody>
-       					 	<c:forEach var="contact" items="${sessionScope.contactsList}">
-       					 		<tr>
-       					 			<td>
-       					 				 <form:checkbox path="selectedEmailList" value="${contact}" cssClass="noClass"/>
-       					 				 <input id="action" type="hidden" value="" name="action"/>
-       					 			</td>
-									<td>
-										${contact}
-									</td>
+						</thead>
+						<tbody>
+							<c:forEach var="contact" items="${sessionScope.contactsList}">
+								<tr>
+									<td><form:checkbox path="selectedEmailList"
+											value="${contact}" cssClass="noClass" /> <input id="action"
+										type="hidden" value="" name="action" /></td>
+									<td>${contact}</td>
 								</tr>
-       					 	</c:forEach>
-       					 </tbody>
+							</c:forEach>
+						</tbody>
 					</table>
-					</form:form>
-				</div>
+				</form:form>
 			</div>
+		</div>
 		</div>
 		
 	</body>
