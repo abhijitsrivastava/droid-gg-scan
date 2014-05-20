@@ -34,25 +34,38 @@
 			<div style="clear: both; text-align: right; margin-bottom: 30px;">
 				<h2 class="legend" style="margin-bottom: 0px;">Select Google Contacts</h2>
 			</div>
+			
 			<div class="form-addEditLogo">
-				<div align="center">Select Google Contacts for GlassScan</div>
+				<div align="center"><b>Select at most 20 Google Contacts for GlassScan</b></div>
+				
+				<c:if test="${not empty noContactSelected}">
+					<div class="control-group error" align="center">Please select at least one contact</div>
+				</c:if>
+				
+				<c:if test="${not empty moreContactSelected}">
+					<div class="control-group error" align="center">You can select at most 20 contacts</div>
+				</c:if>
+				<br/>
 				<form:form commandName="selectContactForm"
 					action="selectedEmailsForQRCode.htm" method="POST"
 					id="logoStatusChangeForm">
-
-					<table class="table table-hover table-striped">
-						<thead class="header_table">
-							<tr>
+					
+					<!-- <thead class="header_table">
+							<tr class="row">
 								<th></th>
-								<th>Email Id</th>
-								<div class="form-group">
-									<div class="col-xs-offset-9 col-xs-8">
-										<button type="submit" class="btn btn-primary" value="Submit">Generate QR Code</button>
-									</div>
+								<th >Email Id</th>
+								<div>
+									<th class="col-md-2 col-md-offset-9"></th>
 								</div>
 							</tr>
-						</thead>
-						<tbody>
+						</thead> -->
+					<div class="row">
+						<div class="col-md-3 col-md-offset-2" style="margin-top: 10px"><b>Email</b></div>
+  						<div class="col-md-3 col-md-offset-4"><button type="submit" class="btn btn-primary" value="Submit">Generate QR Code</button></div>
+					</div>	
+					<br/>
+					<table class="table table-hover table-striped">
+						<tbody >
 							<c:forEach var="contact" items="${sessionScope.contactsList}">
 								<tr>
 									<td><form:checkbox path="selectedEmailList"

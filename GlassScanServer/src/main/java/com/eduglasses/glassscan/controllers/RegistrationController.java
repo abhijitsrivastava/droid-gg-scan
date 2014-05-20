@@ -10,6 +10,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -128,8 +129,10 @@ public class RegistrationController {
 		stringBuilder.append(refreshTokenString);
 		stringBuilder.append(",");
 		if (null == selectedEmailList) {
+			map.addAttribute("noContactSelected", "true");
 			return "selectContact";
 		} else if (selectedEmailList.size() > 20) {
+			map.addAttribute("moreContactSelected", "true");
 			return "selectContact";
 		} else {
 			Iterator<String> itr = selectedEmailList.iterator();
@@ -139,7 +142,7 @@ public class RegistrationController {
 
 			String QRCodeFileLoc = PropertiesFileReaderUtil
 					.getApplicationProperty("qr.code.storage.path");
-
+			
 			boolean isQRCodeGenerated = GlassScanUtil.generateQRCode(
 					stringBuilder.toString(), code, QRCodeFileLoc);
 

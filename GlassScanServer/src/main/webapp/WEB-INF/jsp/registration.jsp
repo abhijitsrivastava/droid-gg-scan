@@ -40,7 +40,7 @@
 				
         		
         			<div align="center">
-            				<a id="googlelogin" href="https://accounts.google.com/o/oauth2/auth?scope=https://mail.google.com%20https://www.google.com/m8/feeds/&redirect_uri=urn:ietf:wg:oauth:2.0:oob&response_type=code&client_id=523728010956-5ehm6m10hi1vqhpmm3771l9727v3ldko.apps.googleusercontent.com">
+            				<a id="googlelogin" href="https://accounts.google.com/o/oauth2/auth?scope=https://mail.google.com%20https://www.google.com/m8/feeds/%20https://www.googleapis.com/auth/drive&redirect_uri=urn:ietf:wg:oauth:2.0:oob&response_type=code&client_id=523728010956-5ehm6m10hi1vqhpmm3771l9727v3ldko.apps.googleusercontent.com">
             			Click here to generate Google verification code</a>
         			</div>
         		
@@ -59,7 +59,7 @@
 				
 					<div class="form-group">
             			<div class="col-xs-offset-5 col-xs-8">
-                			<button type="submit" class="btn btn-primary" value="Submit">Generate QR Code</button>
+                			<button type="submit" class="btn btn-primary" value="Submit">Submit</button>
             			</div>
         			</div>
         		</form:form>
