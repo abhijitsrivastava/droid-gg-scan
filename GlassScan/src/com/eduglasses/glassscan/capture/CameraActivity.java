@@ -11,22 +11,22 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.eduglass.utils.GoogleContactsAPI;
 import com.eduglass.utils.ServerConnection;
+import com.eduglass.utils.Session;
 import com.eduglass.utils.Utils;
 import com.eduglasses.glassscan.BaseGlassActivity;
 import com.eduglasses.glassscan.R;
 import com.eduglasses.glassscan.image.ImageManager;
 import com.google.gdata.data.contacts.ContactEntry;
-import com.google.gdata.data.extensions.Email;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -35,12 +35,13 @@ public class CameraActivity extends BaseGlassActivity implements
 		SurfaceHolder.Callback {
 
 	private static final String TAG = "GlassScan";
-	private static final String IMAGE_PREFIX = "GlassScan_";
+	private static final String IMAGE_PREFIX = "GlassScan";
 
 	private Camera camera;
 	private boolean mHasSurface;
 	private ImageManager mImageManager;
 	private Activity activity;
+	private boolean isImageNotCaptured = true;
 
 	public static Intent newIntent(Context context) {
 		Intent intent = new Intent(context, CameraActivity.class);
@@ -50,7 +51,7 @@ public class CameraActivity extends BaseGlassActivity implements
 	@Override
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
-		setContentView(R.layout.activity_camera);
+		setContentView(R.layout.activity_main_layout_camera);
 		activity = this;
 		mImageManager = new ImageManager(this);
 
@@ -197,8 +198,11 @@ public class CameraActivity extends BaseGlassActivity implements
 
 	@Override
 	protected boolean onTap() {
-		camera.takePicture(null, null, mPicture);
-		//takePicture = true;
+		if (isImageNotCaptured) {
+			isImageNotCaptured = false;
+			camera.takePicture(null, null, mPicture);
+			// takePicture = true;
+		}
 		return super.onTap();
 	}
 
@@ -208,25 +212,30 @@ public class CameraActivity extends BaseGlassActivity implements
 
 			Intent intent = new Intent(getApplicationContext(),
 					ShareActivity.class);
-			intent.putExtra("image", captureData);
+			//intent.putExtra("image", captureData);
 			startActivity(intent);
+			
+			Session.getInstant().setImageBytes(captureData);
+			isImageNotCaptured = true;
+			
+			/*Bitmap captureImage = null;
+			if (captureData != null) {
+				captureImage = getBitmapFromByteArray(captureData);
+			}
 
-			/*
-			 * Bitmap captureImage = null; if (captureData != null) {
-			 * captureImage = getBitmapFromByteArray(captureData); }
-			 * 
-			 * 
-			 * Uri imageUri = null;
-			 * 
-			 * String imageName = IMAGE_PREFIX + System.currentTimeMillis() +
-			 * ".png"; try { imageUri = mImageManager.saveImage(imageName,
-			 * captureImage); Log.v(TAG, "Saving image as: " + imageName);
-			 * 
-			 * 
-			 * 
-			 * } catch (IOException e) { Log.e(TAG, "Failed to save image!", e);
-			 * }
-			 */
+			Uri imageUri = null;
+
+			String imageName = IMAGE_PREFIX + ".png";
+			try {
+				imageUri = mImageManager.saveImage(imageName, captureImage);
+				Log.v(TAG, "Saving image as: " + imageName);
+				intent.putExtra("imagePath", imageUri.toString());
+				startActivity(intent);
+
+			} catch (IOException e) {
+				Log.e(TAG, "Failed to save image!", e);
+			}*/
+			 
 		}
 	};
 

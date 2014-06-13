@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<trigger keyword="@string/glass_scan" >
+<trigger keyword="@string/edu_scan" >
      <constraints camera="true" network="true" />
 </trigger>

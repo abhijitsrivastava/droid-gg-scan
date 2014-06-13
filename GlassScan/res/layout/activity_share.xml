@@ -6,7 +6,7 @@
     <ImageView android:id="@+id/imageview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:contentDescription="@string/glass_scan"
+        android:contentDescription="@string/edu_scan"
         android:scaleType="fitXY" />
     
     <TextView android:id="@+id/textview" 

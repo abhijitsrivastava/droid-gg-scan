@@ -1,8 +1,10 @@
 package com.eduglasses.glassscan.capture;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
@@ -17,7 +19,7 @@ import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Environment;
-import android.speech.RecognitionListener;
+import android.os.Handler;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.text.SpannableStringBuilder;
@@ -26,21 +28,23 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.eduglass.utils.OAuth2Authenticator;
+import com.eduglass.utils.Session;
 import com.eduglass.utils.Utils;
 import com.eduglasses.glassscan.R;
+import com.github.barcodeeye.scan.CaptureQRCodeActivity;
 import com.google.android.glass.media.Sounds;
 import com.google.android.glass.touchpad.Gesture;
 import com.google.android.glass.touchpad.GestureDetector;
+import com.itextpdf.text.BadElementException;
 import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Image;
-import com.itextpdf.text.PageSize;
-import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.PdfWriter;
 
 public class ShareActivity extends Activity {
@@ -49,13 +53,13 @@ public class ShareActivity extends Activity {
 	private static final int SPEECH_REQUEST = 0;
 	private int speechFlag = 11;
 	private GestureDetector mGestureDetector;
-	
+
 	private byte[] imageByte;
 	private AudioManager mAudioManager;
 	private String pdfPath;
 	private ProgressDialog progressDialog;
 	List<Contact> contactList;
-	
+
 	private String subject;
 	private SpeechRecognizer mSpeechRecognizer = null;
 	private String username;
@@ -63,14 +67,20 @@ public class ShareActivity extends Activity {
 	private String receipent;
 	private Activity activity;
 	private boolean shareOptionFlag = true;
+	private boolean onOptionsItemSelectedFlag = false;
+	private View progress;
+
+	private String updateContacts = "Update Contacts";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_share);
+		setContentView(R.layout.activity_main_layout_share);
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		activity = this;
+
+		progress = findViewById(R.id.progress);
 
 		username = Utils.getStringPreferences(this, Utils.KEY_USERNAME);
 		password = Utils.getStringPreferences(this, Utils.KEY_PASSWORD);
@@ -93,8 +103,7 @@ public class ShareActivity extends Activity {
 		mGestureDetector = createGestureDetector(this);
 		initializeSpeechRecognizer();
 
-		Bundle bundle = getIntent().getExtras();
-		imageByte = bundle.getByteArray("image");
+		imageByte = Session.getInstant().getImageBytes();
 
 		if (imageByte != null) {
 			Bitmap captureImage = BitmapFactory.decodeByteArray(imageByte, 0,
@@ -102,15 +111,35 @@ public class ShareActivity extends Activity {
 			ImageView imageView = (ImageView) findViewById(R.id.imageview);
 			imageView.setImageBitmap(captureImage);
 		}
+
+		Bundle bundle = getIntent().getExtras();
+		if (bundle != null) {
+			subject = bundle.getString("subject");
+		}
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
 
-		//shareOptionFlag = true;
+		// shareOptionFlag = true;
 		Log.d(TAG, "onResume");
 		// initializeSpeechRecognizer();
+		new Handler().postDelayed(new Runnable() {
+
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				if (subject != null) {
+					shareOptionFlag = false;
+					// Open menu to select email
+					openOptionsMenu();
+					showToast("Swipe left/right to scroll");
+				}
+
+			}
+		}, 1000);
+
 	}
 
 	@Override
@@ -160,7 +189,7 @@ public class ShareActivity extends Activity {
 					mAudioManager.playSoundEffect(Sounds.TAP);
 					openOptionsMenu();
 					showToast("Swipe left/right to scroll");
-					//createAndSharePDF();
+					// createAndSharePDF();
 					// destroySpeechRecognizer();
 					return true;
 				}
@@ -226,21 +255,20 @@ public class ShareActivity extends Activity {
 			PdfWriter.getInstance(document, new FileOutputStream(pdfFile));
 
 			Image image = Image.getInstance(imageByte);
-			image.setOriginalData(imageByte);
 			image.scalePercent(40);
-			
+
 			document.open();
 			document.add(image);
-			
+
 			document.close();
 			speechFlag = 11;
-			
-			if(sendEmail) {
+
+			if (sendEmail) {
 				displaySpeechRecognizer();
 			} else {
 				uploadToDrive();
 			}
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -294,13 +322,13 @@ public class ShareActivity extends Activity {
 			List<String> results = data
 					.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
 			String spokenText = results.get(0).toLowerCase();
-			
+
 			if (speechFlag == 12 && !spokenText.equals("")) {
 
 				// Got subject line
 				subject = spokenText;
 				shareOptionFlag = false;
-				
+
 				// Open menu to select email
 				openOptionsMenu();
 				showToast("Swipe left/right to scroll");
@@ -335,10 +363,15 @@ public class ShareActivity extends Activity {
 
 			@Override
 			public void run() {
-				progressDialog = ProgressDialog.show(ShareActivity.this, title,
-						message);
-				progressDialog.getWindow().addFlags(
-						WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+				/*
+				 * progressDialog = ProgressDialog.show(ShareActivity.this,
+				 * title, message);
+				 */
+				progress.setVisibility(View.VISIBLE);
+				/*
+				 * progressDialog.getWindow().addFlags(
+				 * WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+				 */
 
 			}
 		});
@@ -349,9 +382,13 @@ public class ShareActivity extends Activity {
 
 			@Override
 			public void run() {
-				if (progressDialog != null) {
-					progressDialog.dismiss();
+				/*
+				 * if (progressDialog != null) { progressDialog.dismiss(); }
+				 */
+				if (progress.getVisibility() == View.VISIBLE) {
+					progress.setVisibility(View.GONE);
 				}
+
 			}
 		});
 	}
@@ -398,7 +435,7 @@ public class ShareActivity extends Activity {
 							getClass().getClassLoader());
 
 					auth2Authenticator.sendMail(subject, receipent);
-					
+
 					mAudioManager.playSoundEffect(Sounds.SUCCESS);
 					dissmissProgress();
 					showToast("Email sent successfully");
@@ -409,7 +446,7 @@ public class ShareActivity extends Activity {
 					ShareActivity.this.finish();
 					showToast("Error occurred, try again");
 				}
-				
+
 				shareOptionFlag = true;
 			}
 		});
@@ -421,16 +458,19 @@ public class ShareActivity extends Activity {
 		shareOptionFlag = true;
 		speechFlag = 11;
 		destroySpeechRecognizer();
-		
+
 		Thread uploadToDriveThread = new Thread(new Runnable() {
-			
+
 			@Override
 			public void run() {
-				
+
 				try {
-					showProgressDialog("Uploading to google drive", "Please wait...");
+					showProgressDialog("Uploading to google drive",
+							"Please wait...");
 					Utils.insertFile(Utils.getStringPreferences(activity,
-										Utils.KEY_ACCESS_TOKEN), "Glass-Scan", "Uploaded via Google Glass", "", "application/pdf", pdfPath);
+							Utils.KEY_ACCESS_TOKEN), "Glass-Scan",
+							"Uploaded via Google Glass", "", "application/pdf",
+							pdfPath);
 					dissmissProgress();
 					ShareActivity.this.finish();
 					showToast("Uploaded successfully");
@@ -450,19 +490,19 @@ public class ShareActivity extends Activity {
 					Log.e(TAG, e.getMessage());
 					e.printStackTrace();
 				}
-				
+
 			}
 		});
 		uploadToDriveThread.start();
 	}
-	
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		/*
 		 * MenuInflater inflater = getMenuInflater();
 		 * inflater.inflate(R.menu.magic, menu);
 		 */
-		
+
 		Log.d(TAG, "Creating options menu: True");
 		return true;
 	}
@@ -476,26 +516,91 @@ public class ShareActivity extends Activity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 
+		Log.d(TAG, "onOptionsItemSelected : shareOptionFlag : "
+				+ shareOptionFlag);
+
 		Log.d(TAG, item.getItemId() + "/" + item.getTitle());
-		
-		if(shareOptionFlag) {
-			
+
+		onOptionsItemSelectedFlag = true;
+
+		if (shareOptionFlag) {
+
 			createAndSharePDF("e-mail".equalsIgnoreCase("" + item.getTitle()));
-			
+
 		} else {
-			
+
 			receipent = item.getTitle().toString();
 			mAudioManager.playSoundEffect(Sounds.TAP);
 			closeOptionsMenu();
-			
-			if("".equals(receipent)) {
-				
+
+			if ("".equals(receipent)) {
+
 				showToast("Contact not found");
-			} else {		
-				sendEmail();
+			} else if (receipent.equalsIgnoreCase(updateContacts)) {
+				Intent intent = new Intent(this, CaptureQRCodeActivity.class);
+				intent.putExtra("subject", subject);
+				startActivity(intent);
+				Session.getInstant().setActivity(ShareActivity.this);
+				// finish();
+
+			} else {
+
+				Document document = new Document();
+
+				String eduDirectoryPath = Environment
+						.getExternalStorageDirectory()
+						+ File.separator
+						+ "eduscan";
+
+				File dir = new File(eduDirectoryPath);
+				if (!dir.exists()) {
+					dir.mkdir();
+				}
+				Log.d(TAG, dir.getAbsolutePath());
+
+				pdfPath = dir.getAbsolutePath() + File.separator
+						+ "glassscan.pdf";
+
+				Log.d(TAG, pdfPath);
+				try {
+
+					File pdfFile = new File(pdfPath);
+					if (pdfFile.exists()) {
+						Log.d(TAG, "File exist: " + pdfPath);
+					}
+
+					pdfFile.createNewFile();
+					PdfWriter.getInstance(document, new FileOutputStream(
+							pdfFile));
+
+					Image image = Image.getInstance(imageByte);
+					image.scalePercent(40);
+
+					document.open();
+					document.add(image);
+
+					document.close();
+					speechFlag = 11;
+					sendEmail();
+				} catch (FileNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (BadElementException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (MalformedURLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (DocumentException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
-		
+
 		return (super.onOptionsItemSelected(item));
 	}
 
@@ -505,21 +610,35 @@ public class ShareActivity extends Activity {
 		Log.d(TAG, "Preparing options menu: True");
 		Log.d(TAG, "shareOptionFlag: " + shareOptionFlag);
 		menu.clear();
-		if(shareOptionFlag) {
-			
+		if (shareOptionFlag) {
+
 			menu.add(0, 1, Menu.NONE, "e-mail");
 			menu.add(0, 2, Menu.NONE, "Drive");
 		} else {
-			
+
 			for (int i = 0; i < contactList.size(); i++) {
 				// menu.add(0, i + 1, Menu.NONE, contactList.get(i).getEmail());
-	
+
 				menu.add(0, i + 1, Menu.NONE,
 						wrapInSpan(contactList.get(i).getEmail()))
 						.setTitleCondensed(contactList.get(i).getEmail());
 			}
+			menu.add(0, contactList.size(), Menu.NONE,
+					wrapInSpan(updateContacts));
 		}
-		
+
 		return super.onPrepareOptionsMenu(menu);
+	}
+
+	@Override
+	public void onOptionsMenuClosed(Menu menu) {
+		// TODO Auto-generated method stub
+		if (onOptionsItemSelectedFlag == false) {
+			Log.d(TAG, "Gesture.SWIPE_DOWN ... onOptionsMenuClosed");
+			shareOptionFlag = true;
+		}
+
+		onOptionsItemSelectedFlag = false;
+		super.onOptionsMenuClosed(menu);
 	}
 }

@@ -16,6 +16,7 @@ package com.github.barcodeeye.scan;
 import java.io.IOException;
 import java.util.Map;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -32,9 +33,11 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.WindowManager;
 
+import com.eduglass.utils.Session;
 import com.eduglass.utils.Utils;
 import com.eduglasses.glassscan.R;
 import com.eduglasses.glassscan.capture.CameraActivity;
+import com.eduglasses.glassscan.capture.ShareActivity;
 import com.github.barcodeeye.BaseGlassActivity;
 import com.github.barcodeeye.migrated.AmbientLightManager;
 import com.github.barcodeeye.migrated.BeepManager;
@@ -337,16 +340,41 @@ public final class CaptureQRCodeActivity extends BaseGlassActivity implements
         	
         	Utils.saveStringPreferences(CaptureQRCodeActivity.this, Utils.KEY_EMAIL_TEXT, emailText);
         	finish();
-        	Intent i = new Intent(this, CameraActivity.class);
-        	//i.putExtra("QRCodeData", scanedMessage);
-        	startActivity(i);
-        	/*startActivity(ResultsActivity.newIntent(this,
-                     processor.getCardResults()));*/
-		}else{
+        	
+			Bundle bundle = getIntent().getExtras();
+			
+			
+			String subject = null;
+			
+			if (bundle != null) {
+				
+				subject = bundle.getString("subject");
+			}
+
+			Intent i = null;
+			if (subject == null) {
+				i = new Intent(this, CameraActivity.class);
+			} else {
+				i = new Intent(this, ShareActivity.class);
+				Activity activity = Session.getInstant().getActivity();
+				if (activity!=null) {
+					activity.finish();
+					Session.getInstant().setActivity(null);
+				}
+				i.putExtra("subject", subject);
+			}
+			// i.putExtra("QRCodeData", scanedMessage);
+			startActivity(i);
+			finish();
+			/*
+			 * startActivity(ResultsActivity.newIntent(this,
+			 * processor.getCardResults()));
+			 */
+		} else {
 			Log.d("inside else", "qr code not matched");
 			onPause();
 			onResume();
-		}        
+		}     
        
     }
 
