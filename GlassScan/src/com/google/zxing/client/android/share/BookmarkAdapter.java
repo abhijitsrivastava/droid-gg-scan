@@ -25,7 +25,7 @@ import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.eduglasses.glassscan.R;
+import com.eduglasses.eduscan.R;
 
 /**
  * A custom adapter designed to fetch bookmarks from a cursor. Before Honeycomb we used

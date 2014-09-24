@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package com.eduglass.utils;
+package com.eduglasses.utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

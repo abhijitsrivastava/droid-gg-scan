@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 
-import com.eduglasses.glassscan.R;
+import com.eduglasses.eduscan.R;
 import com.github.barcodeeye.scan.CaptureQRCodeActivity;
 
 public class LaunchActivity extends Activity {

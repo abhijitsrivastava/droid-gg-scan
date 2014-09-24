@@ -25,7 +25,7 @@ import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.View;
 
-import com.eduglasses.glassscan.R;
+import com.eduglasses.eduscan.R;
 import com.google.zxing.ResultPoint;
 import com.google.zxing.ResultPointCallback;
 import com.google.zxing.client.android.camera.CameraManager;

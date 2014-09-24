@@ -1,4 +1,4 @@
-package com.eduglasses.glassscan.capture;
+package com.eduglasses.eduscan.capture;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -33,10 +33,10 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.eduglass.utils.OAuth2Authenticator;
-import com.eduglass.utils.Session;
-import com.eduglass.utils.Utils;
-import com.eduglasses.glassscan.R;
+import com.eduglasses.eduscan.R;
+import com.eduglasses.utils.OAuth2Authenticator;
+import com.eduglasses.utils.Session;
+import com.eduglasses.utils.Utils;
 import com.github.barcodeeye.scan.CaptureQRCodeActivity;
 import com.google.android.glass.media.Sounds;
 import com.google.android.glass.touchpad.Gesture;

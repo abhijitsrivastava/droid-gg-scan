@@ -27,7 +27,7 @@ import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.eduglasses.glassscan.R;
+import com.eduglasses.eduscan.R;
 import com.google.zxing.Result;
 
 final class HistoryItemAdapter extends ArrayAdapter<HistoryItem> {

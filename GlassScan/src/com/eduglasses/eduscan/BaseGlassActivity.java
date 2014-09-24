@@ -1,4 +1,4 @@
-package com.eduglasses.glassscan;
+package com.eduglasses.eduscan;
 
 import android.app.Activity;
 import android.content.Context;

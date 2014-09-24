@@ -1,4 +1,4 @@
-package com.eduglass.utils;
+package com.eduglasses.utils;
 
 import java.net.MalformedURLException;
 import java.net.URL;

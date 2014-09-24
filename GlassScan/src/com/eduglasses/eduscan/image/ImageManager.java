@@ -1,4 +1,4 @@
-package com.eduglasses.glassscan.image;
+package com.eduglasses.eduscan.image;
 
 import java.io.File;
 import java.io.FileOutputStream;

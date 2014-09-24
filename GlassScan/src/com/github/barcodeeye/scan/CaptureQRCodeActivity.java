@@ -33,11 +33,11 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.WindowManager;
 
-import com.eduglass.utils.Session;
-import com.eduglass.utils.Utils;
-import com.eduglasses.glassscan.R;
-import com.eduglasses.glassscan.capture.CameraActivity;
-import com.eduglasses.glassscan.capture.ShareActivity;
+import com.eduglasses.eduscan.R;
+import com.eduglasses.eduscan.capture.CameraActivity;
+import com.eduglasses.eduscan.capture.ShareActivity;
+import com.eduglasses.utils.Session;
+import com.eduglasses.utils.Utils;
 import com.github.barcodeeye.BaseGlassActivity;
 import com.github.barcodeeye.migrated.AmbientLightManager;
 import com.github.barcodeeye.migrated.BeepManager;

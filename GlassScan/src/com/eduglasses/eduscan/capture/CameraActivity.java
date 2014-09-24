@@ -1,4 +1,4 @@
-package com.eduglasses.glassscan.capture;
+package com.eduglasses.eduscan.capture;
 
 import java.io.IOException;
 import java.util.List;
@@ -11,7 +11,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,13 +18,13 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.widget.Toast;
 
-import com.eduglass.utils.GoogleContactsAPI;
-import com.eduglass.utils.ServerConnection;
-import com.eduglass.utils.Session;
-import com.eduglass.utils.Utils;
-import com.eduglasses.glassscan.BaseGlassActivity;
-import com.eduglasses.glassscan.R;
-import com.eduglasses.glassscan.image.ImageManager;
+import com.eduglasses.eduscan.BaseGlassActivity;
+import com.eduglasses.eduscan.R;
+import com.eduglasses.eduscan.image.ImageManager;
+import com.eduglasses.utils.GoogleContactsAPI;
+import com.eduglasses.utils.ServerConnection;
+import com.eduglasses.utils.Session;
+import com.eduglasses.utils.Utils;
 import com.google.gdata.data.contacts.ContactEntry;
 
 /**

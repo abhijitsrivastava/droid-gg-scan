@@ -1,4 +1,4 @@
-package com.eduglasses.glassscan.capture;
+package com.eduglasses.eduscan.capture;
 
 public class Contact {
 

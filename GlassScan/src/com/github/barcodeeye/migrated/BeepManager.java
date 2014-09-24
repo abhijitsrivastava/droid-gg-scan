@@ -25,7 +25,7 @@ import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.eduglasses.glassscan.R;
+import com.eduglasses.eduscan.R;
 import com.github.barcodeeye.scan.CaptureQRCodeActivity;
 
 /**

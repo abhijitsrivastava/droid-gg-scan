@@ -1,4 +1,4 @@
-package com.eduglass.utils;
+package com.eduglasses.utils;
 
 /*
  *  Licensed to the Apache Software Foundation (ASF) under one or more

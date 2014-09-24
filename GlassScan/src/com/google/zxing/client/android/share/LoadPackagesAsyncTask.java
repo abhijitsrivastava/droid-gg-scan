@@ -32,7 +32,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 
-import com.eduglasses.glassscan.R;
+import com.eduglasses.eduscan.R;
 
 /**
  * Loads a list of packages installed on the device asynchronously.
