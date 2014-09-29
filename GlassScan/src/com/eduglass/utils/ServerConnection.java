@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.eduglasses.utils;
+package com.eduglass.utils;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;

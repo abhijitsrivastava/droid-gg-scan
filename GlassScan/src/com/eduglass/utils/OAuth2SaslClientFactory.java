@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package com.eduglasses.utils;
+package com.eduglass.utils;
 import java.util.Map;
 import java.util.logging.Logger;
 

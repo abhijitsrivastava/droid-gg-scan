@@ -1,4 +1,4 @@
-package com.eduglasses.utils;
+package com.eduglass.utils;
 
 import android.app.Activity;
 

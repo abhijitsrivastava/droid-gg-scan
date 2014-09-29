@@ -4,7 +4,6 @@
     <string name="app_name">EduScan</string>
     <string name="hello_world">Hello world!</string>
   
-    <string name="edu_scan">Edu Scan</string>
     <string name="label_share">Tap to share</string>
     <string name="label_capture">Tap to capture</string>
 

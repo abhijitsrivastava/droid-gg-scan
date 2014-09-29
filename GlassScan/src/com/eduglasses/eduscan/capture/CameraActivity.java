@@ -18,13 +18,13 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.widget.Toast;
 
+import com.eduglass.utils.GoogleContactsAPI;
+import com.eduglass.utils.ServerConnection;
+import com.eduglass.utils.Session;
+import com.eduglass.utils.Utils;
 import com.eduglasses.eduscan.BaseGlassActivity;
 import com.eduglasses.eduscan.R;
 import com.eduglasses.eduscan.image.ImageManager;
-import com.eduglasses.utils.GoogleContactsAPI;
-import com.eduglasses.utils.ServerConnection;
-import com.eduglasses.utils.Session;
-import com.eduglasses.utils.Utils;
 import com.google.gdata.data.contacts.ContactEntry;
 
 /**

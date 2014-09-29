@@ -5,8 +5,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 
+import com.eduglass.utils.Utils;
 import com.eduglasses.eduscan.capture.CameraActivity;
-import com.eduglasses.utils.Utils;
 import com.github.barcodeeye.scan.CaptureQRCodeActivity;
 
 public class LaunchActivity extends Activity {
